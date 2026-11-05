@@ -1,0 +1,20 @@
+[package]
+name = "nexlink-protocol"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "NEXLINK wire protocol definitions"
+
+[lib]
+name = "nexlink_protocol"
+path = "src/lib.rs"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+base64 = { workspace = true }
+
+[dev-dependencies]

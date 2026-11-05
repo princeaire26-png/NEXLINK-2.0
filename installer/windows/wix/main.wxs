@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <!-- Agent payload only. A production installer must not be released until the
+       Windows service executable, tray app, configuration and lifecycle tests exist. -->
+  <Package Name="NEXLINK Client"
+           Manufacturer="JOXE_VERSE TECHNOLOGIES"
+           Version="0.2.0"
+           UpgradeCode="A1B2C3D4-E5F6-7890-ABCD-EF1234567890"
+           Scope="perMachine">
+    <MajorUpgrade DowngradeErrorMessage="A newer version of NEXLINK Client is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="Nexlink">
+        <Directory Id="CLIENTFOLDER" Name="Client">
+          <Component Id="ClientPayload" Guid="B2C3D4E5-F6A7-8901-BCDE-F12345678901">
+            <File Id="AgentExe" Source="$(var.AgentExe)" Name="NEXLINK-Agent.exe" KeyPath="yes" />
+          </Component>
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+    <Feature Id="MainFeature" Title="NEXLINK Client" Level="1">
+      <ComponentRef Id="ClientPayload" />
+    </Feature>
+  </Package>
+</Wix>
