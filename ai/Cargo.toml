@@ -1,0 +1,23 @@
+[package]
+name = "nexlink-ai"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "NEXLINK AI subsystem — tool system, policy engine, provider abstraction"
+
+[lib]
+name = "nexlink_ai"
+path = "src/lib.rs"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+async-trait = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util"] }

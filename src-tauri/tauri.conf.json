@@ -1,0 +1,50 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "NEXLINK",
+  "version": "0.5.0",
+  "identifier": "technologies.joxeverse.nexlink",
+  "build": {
+    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev -- --host 127.0.0.1",
+    "devUrl": "http://localhost:3000",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "NEXLINK \u2014 Connect. Control. Automate.",
+        "width": 1440,
+        "height": 920,
+        "minWidth": 1040,
+        "minHeight": 680,
+        "resizable": true,
+        "fullscreen": false,
+        "visible": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' asset: http://asset.localhost data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src ipc: http://ipc.localhost http://127.0.0.1:* http://localhost:* https: wss:;"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "category": "Utility",
+    "shortDescription": "NEXLINK remote computing command suite",
+    "longDescription": "NEXLINK Server Dashboard, Server Manager and Endpoint Client interfaces.",
+    "publisher": "JOXE_VERSE TECHNOLOGIES",
+    "windows": {
+      "nsis": {
+        "installMode": "perMachine",
+        "displayLanguageSelector": false,
+        "startMenuFolder": "NEXLINK"
+      }
+    },
+    "icon": [
+      "icons/icon.png"
+    ]
+  }
+}

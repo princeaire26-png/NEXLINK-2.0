@@ -1,0 +1,141 @@
+name: Windows Agent Build
+
+on:
+  push:
+    branches: [main, develop]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-windows:
+    name: Build Windows Agent
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+      
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "."
+      
+      - name: Build agent (debug)
+        run: cargo build --package nexlink-agent
+      
+      - name: Run agent tests
+        run: cargo test --package nexlink-agent
+      
+      - name: Build agent (release)
+        run: cargo build --release --package nexlink-agent --target x86_64-pc-windows-msvc
+      
+      - name: Verify executable
+        run: |
+          $exe = "target/x86_64-pc-windows-msvc/release/nexlink-agent.exe"
+          if (Test-Path $exe) {
+            Write-Host "✓ Agent executable built successfully"
+            & $exe --version
+          } else {
+            Write-Error "Agent executable not found"
+            exit 1
+          }
+      
+      - name: Create dist directory
+        run: |
+          New-Item -ItemType Directory -Force -Path dist/windows
+          Copy-Item "target/x86_64-pc-windows-msvc/release/nexlink-agent.exe" "dist/windows/NEXLINK-Agent.exe"
+      
+      - name: Upload agent artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NEXLINK-Agent-Windows
+          path: dist/windows/NEXLINK-Agent.exe
+          retention-days: 30
+      
+      # This workflow intentionally publishes only the portable agent.
+      # Production setup EXEs are gated until service/tray/enrollment and
+      # installer lifecycle tests are implemented and passing.
+
+  # Build for other platforms
+  build-linux:
+    name: Build Linux Agent
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "."
+      
+      - name: Build agent
+        run: cargo build --release --package nexlink-agent
+      
+      - name: Run tests
+        run: cargo test --workspace
+      
+      - name: Run clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NEXLINK-Agent-Linux
+          path: target/release/nexlink-agent
+          retention-days: 30
+  
+  build-macos:
+    name: Build macOS Agent
+    runs-on: macos-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "."
+      
+      - name: Build agent
+        run: cargo build --release --package nexlink-agent
+      
+      - name: Run tests
+        run: cargo test --workspace
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NEXLINK-Agent-macOS
+          path: target/release/nexlink-agent
+          retention-days: 30
+
+  # Release creation for tags
+  release:
+    name: Create Release
+    needs: [build-windows, build-linux, build-macos]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+      
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            NEXLINK-Agent-Windows/NEXLINK-Agent.exe
+            NEXLINK-Agent-Linux/nexlink-agent
+            NEXLINK-Agent-macOS/nexlink-agent
+          draft: false
+          prerelease: false
+          generate_release_notes: true
