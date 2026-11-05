@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Activity, ArrowUpRight, Bot, Cable, CheckCircle2, CircleAlert, Clock3, Command, Cpu, HardDrive, Laptop, Network, Plus, Radio, RefreshCw, ShieldCheck, Signal, Sparkles, Wifi } from 'lucide-react';
+import { Activity, ArrowUpRight, Bot, Cable, CheckCircle2, AlertCircle, Clock3, Command, Cpu, HardDrive, Laptop, Network, Plus, Radio, RefreshCw, ShieldCheck, Signal, Sparkles, Wifi } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { monitoringApi, MonitoringSummary } from '../../api/monitoring';
 
@@ -45,7 +45,7 @@ export default function OverviewPage() {
         </div>
       </header>
 
-      {error && <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-400/20 bg-amber-400/[.06] p-4 text-sm text-amber-200"><CircleAlert size={18} className="mt-0.5 shrink-0"/><div><p className="font-semibold">Live data unavailable</p><p className="mt-1 text-amber-100/60">{error}. Displayed values are not simulated; reconnect to the server to restore telemetry.</p></div></div>}
+      {error && <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-400/20 bg-amber-400/[.06] p-4 text-sm text-amber-200"><AlertCircle size={18} className="mt-0.5 shrink-0"/><div><p className="font-semibold">Live data unavailable</p><p className="mt-1 text-amber-100/60">{error}. Displayed values are not simulated; reconnect to the server to restore telemetry.</p></div></div>}
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-4">{cards.map(card => <MetricCard key={card.label} {...card}/>)}</section>
 
@@ -64,7 +64,7 @@ export default function OverviewPage() {
 
         <div className="nx-panel p-6"><div className="flex items-center justify-between"><div><p className="text-xs font-semibold uppercase tracking-[.16em] text-slate-500">System status</p><h2 className="mt-1 text-lg font-semibold text-white">Server overview</h2></div><span className="nx-icon green"><Activity size={18}/></span></div>
           <div className="mt-6 space-y-4">
-            {[{name:'API & dashboard',state:error?'Check connection':'Monitoring',icon:Command},{name:'Device coordination',state:'Authenticated channel',icon:Cable},{name:'LAN discovery',state:'DNS-SD service',icon:Radio},{name:'Security model',state:'Approval required',icon:ShieldCheck}].map((item,i)=><div key={item.name} className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[.06] bg-white/[.035] text-cyan-300"><item.icon size={16}/></div><div className="min-w-0 flex-1"><p className="text-sm font-medium text-slate-200">{item.name}</p><p className="mt-0.5 text-xs text-slate-500">{item.state}</p></div>{i===0&&error?<CircleAlert size={16} className="text-amber-400"/>:<CheckCircle2 size={16} className="text-emerald-400"/>}</div>)}
+            {[{name:'API & dashboard',state:error?'Check connection':'Monitoring',icon:Command},{name:'Device coordination',state:'Authenticated channel',icon:Cable},{name:'LAN discovery',state:'DNS-SD service',icon:Radio},{name:'Security model',state:'Approval required',icon:ShieldCheck}].map((item,i)=><div key={item.name} className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[.06] bg-white/[.035] text-cyan-300"><item.icon size={16}/></div><div className="min-w-0 flex-1"><p className="text-sm font-medium text-slate-200">{item.name}</p><p className="mt-0.5 text-xs text-slate-500">{item.state}</p></div>{i===0&&error?<AlertCircle size={16} className="text-amber-400"/>:<CheckCircle2 size={16} className="text-emerald-400"/>}</div>)}
           </div><div className="mt-6 flex items-center justify-between border-t border-white/[.07] pt-4 text-xs text-slate-500"><span className="flex items-center gap-1.5"><Clock3 size={13}/> Last sync</span><span>{lastUpdated ? lastUpdated.toLocaleTimeString() : 'Waiting for telemetry'}</span></div>
         </div>
       </section>

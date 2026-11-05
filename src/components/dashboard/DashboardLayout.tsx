@@ -1,7 +1,7 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import BrandFooter from '../shared/BrandFooter';
-import { Bot, Cable, ChevronRight, Command, FileClock, LayoutDashboard, LogOut, Plus, Radio, Settings2, ShieldCheck, Sparkles, Laptop, MonitorCog, AppWindow } from 'lucide-react';
+import { Bot, Cable, ChevronRight, Command, FileClock, LayoutDashboard, LogOut, Plus, Radio, Settings2, ShieldCheck, Sparkles, Laptop, Monitor, AppWindow } from 'lucide-react';
 
 export default function DashboardLayout() {
   const { user, logout } = useAuth();
@@ -10,7 +10,7 @@ export default function DashboardLayout() {
 
   const navItems = [
     { path: '/dashboard', label: 'Overview', icon: LayoutDashboard },
-    { path: '/manager', label: 'Server Manager', icon: MonitorCog },
+    { path: '/manager', label: 'Server Manager', icon: Monitor },
     { path: '/client', label: 'Endpoint Client', icon: AppWindow },
     { path: '/dashboard/devices', label: 'Endpoints', icon: Laptop },
     { path: '/dashboard/enroll', label: 'Pair endpoint', icon: Plus },

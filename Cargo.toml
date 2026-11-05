@@ -5,6 +5,7 @@ members = [
     "protocol",
     "ai",
 ]
+exclude = ["src-tauri"]
 # Note: server/ is a Node.js/TypeScript project, not a Rust crate
 
 [workspace.package]

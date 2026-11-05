@@ -107,7 +107,7 @@ export default function FeatureCenterPage() {
             <div className="space-y-3">
               {pending.map(({ operation, deviceName }) => (
                 <div key={operation.id} className="flex flex-col md:flex-row md:items-center justify-between gap-3 rounded-lg bg-gray-950 border border-gray-800 p-3">
-                  <div><p className="text-sm font-medium text-white">{operation.action.replaceAll('_', ' ')} · {deviceName}</p><p className="text-xs text-gray-400 mt-1">{operation.reason}</p><p className="text-[11px] text-amber-300 mt-1">{operation.riskLevel.toUpperCase()} risk · requested {new Date(operation.createdAt).toLocaleString()}</p></div>
+                  <div><p className="text-sm font-medium text-white">{operation.action.replace(/_/g, ' ')} · {deviceName}</p><p className="text-xs text-gray-400 mt-1">{operation.reason}</p><p className="text-[11px] text-amber-300 mt-1">{operation.riskLevel.toUpperCase()} risk · requested {new Date(operation.createdAt).toLocaleString()}</p></div>
                   {operation.requesterId === user?.id ? <span className="text-xs text-gray-500">Awaiting a different approver</span> : <div className="flex gap-2 shrink-0"><button onClick={() => void decideOperation(operation.id, 'approve')} className="px-3 py-2 rounded-lg text-xs bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 hover:bg-emerald-500/20">Approve</button><button onClick={() => void decideOperation(operation.id, 'reject')} className="px-3 py-2 rounded-lg text-xs bg-red-500/10 border border-red-500/20 text-red-300 hover:bg-red-500/20">Reject</button></div>}
                 </div>
               ))}
