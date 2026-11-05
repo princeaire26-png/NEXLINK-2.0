@@ -1,0 +1,75 @@
+name: NEXLINK Windows Desktop Installer
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'src-tauri/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/windows-desktop-release.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    name: Build and validate NEXLINK Setup.exe
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: Install frontend dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Type-check frontend
+        run: npm run typecheck
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Build elevated Windows installer
+        run: npm run tauri -- build --target x86_64-pc-windows-msvc
+
+      - name: Verify installer exists
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem "src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe" -ErrorAction SilentlyContinue
+          if (-not $installer) { throw "NEXLINK NSIS Setup.exe was not produced." }
+          $installer | ForEach-Object { Write-Host "Built: $($_.FullName) ($($_.Length) bytes)" }
+
+      - name: Upload NEXLINK Setup.exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: NEXLINK-Windows-Setup-x64
+          path: src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload portable desktop executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: NEXLINK-Desktop-Portable-x64
+          path: src-tauri/target/x86_64-pc-windows-msvc/release/nexlink-desktop.exe
+          if-no-files-found: warn
+          retention-days: 30
